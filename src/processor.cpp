@@ -1,4 +1,12 @@
 #include "processor.h"
 
 // TODO: Return the aggregate CPU utilization
-float Processor::Utilization() { return 0.0; }
+using namespace LinuxParser;
+
+float Processor::Utilization() {
+  //std::ifstream stream(kProcDirectory + kVersionFilename);
+    
+    return 0.0;
+     
+     
+ }

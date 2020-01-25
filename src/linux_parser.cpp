@@ -2,8 +2,10 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "linux_parser.h"
+#include <sstream>
 
 using std::stof;
 using std::string;
@@ -67,7 +69,43 @@ vector<int> LinuxParser::Pids() {
 }
 
 // TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+float LinuxParser::MemoryUtilization() { 
+
+  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
+  string line,key, value;
+  float utilization = 0.0;
+  float memTotal, memFree, memAvailable;
+  
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::replace(line.begin(), line.end(), 'k', ' ');
+      std::replace(line.begin(), line.end(), 'B', ' ');
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == "MemTotal") {
+          //std::replace(value.begin(), value.end(), '_', ' ');
+          //return value;
+          std::stringstream s(value);
+          s >> memTotal;
+         //probaly super buggy if keys are out of order, use regex is probably more roboust         
+        } else if(key == "MemFree") {
+           std::stringstream s(value);
+           s >> memFree;
+           return (memFree-memTotal)/memTotal;
+
+        }
+      }
+    }
+  }
+  return utilization;
+  
+  
+  return 0.0; 
+  
+  
+  
+  }
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() { return 0; }
