@@ -98,20 +98,36 @@ float LinuxParser::MemoryUtilization() {
       }
     }
   }
-  return utilization;
+  return utilization; //default return;
+}
+
+// TODO: Read and return the system uptime
+long LinuxParser::UpTime() { 
+  long uptimeTotal, idleUptime = 0;
+  string line,key, value;
+
+  std::ifstream filestream(kProcDirectory + kUptimeFilename);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      linestream >> uptimeTotal >> idleUptime;
+      
+    }
+
+
+  }
+  return uptimeTotal; 
+}
+
+// TODO: Read and return the number of jiffies for the system
+long LinuxParser::Jiffies() { 
   
   
-  return 0.0; 
+  
   
   
   
   }
-
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
-
-// TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
@@ -127,7 +143,32 @@ long LinuxParser::IdleJiffies() { return 0; }
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 // TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return 0; }
+int LinuxParser::TotalProcesses() { 
+
+ std::ifstream filestream(kProcDirectory + kStatFilename);
+  string line,key, value;
+  float processes = 0.0;
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == "processes") {
+          //std::replace(value.begin(), value.end(), '_', ' ');
+          //return value;
+          std::stringstream s(value);
+          s >> processes;
+         //probaly super buggy if keys are out of order, use regex is probably more roboust         
+        } else {
+          continue;
+
+        }
+      }
+    }
+  }
+  return processes; 
+ 
+
+}
 
 // TODO: Read and return the number of running processes
 int LinuxParser::RunningProcesses() { return 0; }
